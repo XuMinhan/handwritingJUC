@@ -1,5 +1,6 @@
 # handwritingJUC
-此项目为手写JUC组件 --from UESTC XuMinhan
+此项目为手写JUC组件 --from UESTC 徐敏涵 
+QQ:1216774549
 
 喜欢造轮子，卧槽，拦不住的
 
