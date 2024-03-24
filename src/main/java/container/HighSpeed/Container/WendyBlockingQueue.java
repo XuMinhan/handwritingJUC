@@ -1,7 +1,7 @@
 package container.HighSpeed.Container;
 
-import Lock.CASLock;
-import Lock.ConditionObject;
+import lock.CASLock;
+import lock.ConditionObject;
 import container.LowSpeed.LeonLinkedList;
 public class WendyBlockingQueue<T> {
     private final LeonLinkedList<T> queue = new LeonLinkedList<>();

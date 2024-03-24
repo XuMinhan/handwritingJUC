@@ -1,6 +1,6 @@
 package container.HighSpeed.Container;
 
-import Lock.CASLock;
+import lock.CASLock;
 import container.HighSpeed.MyMap;
 
 public class WendyHashMap<K, V> implements MyMap<K, V> {
@@ -308,6 +308,13 @@ public class WendyHashMap<K, V> implements MyMap<K, V> {
             locks[index].unlock(); // 释放锁
         }
         return null;
+    }
+
+     V getOrDefault(K key, V defaultValue) {
+        V v;
+        return (((v = get(key)) != null))
+                ? v
+                : defaultValue;
     }
 
 

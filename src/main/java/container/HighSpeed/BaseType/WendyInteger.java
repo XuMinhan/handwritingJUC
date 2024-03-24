@@ -1,6 +1,6 @@
 package container.HighSpeed.BaseType;
 
-import Lock.CASLock;
+import lock.CASLock;
 
 public class WendyInteger {
     private volatile int value;

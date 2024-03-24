@@ -1,9 +1,7 @@
-package Lock;
+package lock;
 
 
 import container.LowSpeed.LeonBlockingQueue;
-
-import java.util.concurrent.TimeUnit;
 
 public class ConditionObject {
     private final CASLock externalLock; // 重命名传入的锁
