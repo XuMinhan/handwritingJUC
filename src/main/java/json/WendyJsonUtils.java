@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class WendyJsonUtils {
 
-    // 将Java对象序列化为JSON字符串
+    // 将Java对象序列化为JSON字符串,仅支持String和int
     public static String serialize(Object obj) {
         if (obj == null) {
             return "null";
