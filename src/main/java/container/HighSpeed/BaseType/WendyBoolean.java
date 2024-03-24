@@ -1,6 +1,6 @@
 package container.HighSpeed.BaseType;
 
-import Lock.CASLock;
+import lock.CASLock;
 
 public class WendyBoolean {
     private volatile boolean value;

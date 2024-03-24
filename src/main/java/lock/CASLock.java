@@ -1,4 +1,4 @@
-package Lock;
+package lock;
 
 import container.LowSpeed.LeonHashMap;
 import sun.misc.Unsafe;

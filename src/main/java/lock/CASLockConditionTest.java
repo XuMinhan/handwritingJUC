@@ -1,4 +1,4 @@
-package Lock;
+package lock;
 
 import java.util.LinkedList;
 import java.util.List;

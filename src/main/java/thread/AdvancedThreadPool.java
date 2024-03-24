@@ -1,7 +1,7 @@
 package thread;
 
-import Lock.CASLock;
-import Lock.ConditionObject;
+import lock.CASLock;
+import lock.ConditionObject;
 import container.HighSpeed.BaseType.WendyBoolean;
 import container.HighSpeed.BaseType.WendyInteger;
 import container.HighSpeed.Container.WendyBlockingQueue;
