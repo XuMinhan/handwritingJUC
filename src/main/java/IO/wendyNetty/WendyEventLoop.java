@@ -110,6 +110,7 @@ public class WendyEventLoop {
             System.out.println("Client connected: " + client);
         }
     }
+
     private void answerWithEcho(SelectionKey key) throws IOException {
         SocketChannel clientChannel = (SocketChannel) key.channel();
         ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -135,7 +136,4 @@ public class WendyEventLoop {
         ByteBuffer dataBuffer = ByteBuffer.wrap(baos.toByteArray());
         controller.process(clientChannel, dataBuffer);
     }
-
-
-
 }
