@@ -26,6 +26,14 @@ public class Person {
     public void setName(String name) {
         this.name = name;
     }
-// 假设有getter和setter
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                '}';
+    }
+    // 假设有getter和setter
 }
 

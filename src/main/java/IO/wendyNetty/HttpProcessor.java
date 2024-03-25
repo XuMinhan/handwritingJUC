@@ -2,7 +2,7 @@ package IO.wendyNetty;
 
 import IO.netUtils.httpRequestParser.HttpRequestParser;
 import IO.netUtils.httpResponseUtil.HttpResponseUtils;
-import IO.netUtils.json.test.Person;
+import IO.netUtils.json.WendyJsonUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -51,6 +51,7 @@ public class HttpProcessor {
 //        System.out.println(parse.getBody());
 
         String requestMethod = parse.getMethod();
+        String body = parse.getBody();
         Map<String, String> requestParams = parse.getParameters();
         if (method != null) {
             // 检查这个Method是否支持当前的请求方法
@@ -62,10 +63,10 @@ public class HttpProcessor {
                         Parameter[] parameters = method.getParameters();
                         Object[] args = new Object[parameters.length];
                         for (int i = 0; i < parameters.length; i++) {
-                            Param paramAnnotation = parameters[i].getAnnotation(Param.class);
-                            if (paramAnnotation != null) {
+                            RequestParam requestParamAnnotation = parameters[i].getAnnotation(RequestParam.class);
+                            if (requestParamAnnotation != null) {
                                 // 从请求参数中获取值，并将其转换为正确的类型
-                                String paramName = paramAnnotation.value();
+                                String paramName = requestParamAnnotation.value();
                                 String paramValue = requestParams.get(paramName);
                                 Class<?> paramType = parameters[i].getType();
                                 Object argValue = convertStringToType(paramValue, paramType);
@@ -76,6 +77,27 @@ public class HttpProcessor {
                         Object resp = method.invoke(handler, args);
                         String responseData = HttpResponseUtils.buildHttpResponse(resp);
                         ByteBuffer responseBuffer = ByteBuffer.wrap(responseData.getBytes());
+                        clientChannel.write(responseBuffer);
+                        clientChannel.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }if (requestMethod.equals("POST")) {
+                    try {
+                        // 直接获取方法的唯一参数，假设这个参数使用了@RequestBody注解
+                        Parameter parameter = method.getParameters()[0]; // 直接获取第一个（也是唯一一个）参数
+                        // 反序列化JSON字符串为Java对象
+                        Class<?> paramType = parameter.getType();
+                        Object argValue = WendyJsonUtils.deserialize(body, paramType);
+
+                        // 调用处理方法
+                        Object resp = method.invoke(handler, new Object[]{argValue});
+
+                        // 序列化响应对象为JSON字符串
+                        String responseData = HttpResponseUtils.buildHttpResponse(resp);
+                        ByteBuffer responseBuffer = ByteBuffer.wrap(responseData.getBytes());
+
+                        // 发送响应
                         clientChannel.write(responseBuffer);
                         clientChannel.close();
                     } catch (Exception e) {
