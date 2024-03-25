@@ -1,5 +1,6 @@
 package IO.wendyNetty;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -109,21 +110,32 @@ public class WendyEventLoop {
             System.out.println("Client connected: " + client);
         }
     }
-
     private void answerWithEcho(SelectionKey key) throws IOException {
         SocketChannel clientChannel = (SocketChannel) key.channel();
         ByteBuffer buffer = ByteBuffer.allocate(1024);
-        int bytesRead = clientChannel.read(buffer);
-        if (bytesRead == -1) {
-            System.out.println("Connection closed by client: " + clientChannel);
-            clientChannel.close();
-        } else {
-            buffer.flip(); // 准备读取buffer中的数据
-            // 假设命令ID总是消息的前4个字节
-            controller.process(clientChannel, buffer);
-            buffer.clear();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(); // 用于累积数据
+
+        while (true) {
+            int bytesRead = clientChannel.read(buffer);
+            if (bytesRead == -1) { // 检查客户端是否关闭了连接
+                System.out.println("Connection closed by client: " + clientChannel);
+                clientChannel.close();
+                break;
+            } else if (bytesRead == 0) { // 没有更多数据可读
+                break;
+            }
+            buffer.flip(); // 准备从buffer读取数据
+            while (buffer.hasRemaining()) {
+                baos.write(buffer.get()); // 将数据写入ByteArrayOutputStream
+            }
+            buffer.clear(); // 清空buffer，准备下一次读取
         }
+
+        // 将累积的数据转换为ByteBuffer，交给controller处理
+        ByteBuffer dataBuffer = ByteBuffer.wrap(baos.toByteArray());
+        controller.process(clientChannel, dataBuffer);
     }
+
 
 
 }
