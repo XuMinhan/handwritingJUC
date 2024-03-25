@@ -1,6 +1,6 @@
-package IO.netUtils.json.test;
+package wendyNetty.processors.httpProcessor.utils.json.test;
 
-import IO.netUtils.json.WendyJsonUtils;
+import wendyNetty.processors.httpProcessor.utils.json.WendyJsonUtils;
 
 public class TestSimpleJsonUtils {
     public static void main(String[] args) {

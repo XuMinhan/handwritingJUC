@@ -1,4 +1,4 @@
-package IO.netUtils.json;
+package wendyNetty.processors.httpProcessor.utils.json;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

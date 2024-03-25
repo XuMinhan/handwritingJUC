@@ -1,4 +1,4 @@
-package IO.netUtils.HttpExample.getRequest;
+package wendyNetty.processors.httpProcessor.utils.HttpExample.getRequest;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;

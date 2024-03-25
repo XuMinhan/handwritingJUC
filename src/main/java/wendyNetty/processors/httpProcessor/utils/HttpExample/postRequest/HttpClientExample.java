@@ -1,6 +1,6 @@
-package IO.netUtils.HttpExample.postRequest;
+package wendyNetty.processors.httpProcessor.utils.HttpExample.postRequest;
 
-import IO.netUtils.json.test.Person;
+import wendyNetty.processors.httpProcessor.utils.json.test.Person;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;

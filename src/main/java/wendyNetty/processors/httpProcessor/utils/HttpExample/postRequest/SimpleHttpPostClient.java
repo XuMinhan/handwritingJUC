@@ -1,4 +1,4 @@
-package IO.netUtils.HttpExample.postRequest;
+package wendyNetty.processors.httpProcessor.utils.HttpExample.postRequest;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;

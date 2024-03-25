@@ -1,6 +1,6 @@
-package IO.netUtils.httpResponseUtil;
+package wendyNetty.processors.httpProcessor.utils.httpResponseUtil;
 
-import IO.netUtils.json.test.Person;
+import wendyNetty.processors.httpProcessor.utils.json.test.Person;
 
 public class HttpResponseTest {
 

@@ -1,4 +1,4 @@
-package IO.wendyNetty;
+package wendyNetty.processors.httpProcessor;
 
 
 import java.lang.annotation.ElementType;

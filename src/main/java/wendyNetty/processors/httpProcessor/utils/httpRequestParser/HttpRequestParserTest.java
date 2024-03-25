@@ -1,4 +1,4 @@
-package IO.netUtils.httpRequestParser;
+package wendyNetty.processors.httpProcessor.utils.httpRequestParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

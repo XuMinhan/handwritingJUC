@@ -1,8 +1,8 @@
-package IO.wendyNetty;
+package wendyNetty.processors.httpProcessor;
 
-import IO.netUtils.httpRequestParser.HttpRequestParser;
-import IO.netUtils.httpResponseUtil.HttpResponseUtils;
-import IO.netUtils.json.WendyJsonUtils;
+import wendyNetty.processors.httpProcessor.utils.httpRequestParser.HttpRequestParser;
+import wendyNetty.processors.httpProcessor.utils.httpResponseUtil.HttpResponseUtils;
+import wendyNetty.processors.httpProcessor.utils.json.WendyJsonUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

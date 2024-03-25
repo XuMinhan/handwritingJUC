@@ -1,4 +1,4 @@
-package IO.netUtils.HttpExample.getRequest;
+package wendyNetty.processors.httpProcessor.utils.HttpExample.getRequest;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

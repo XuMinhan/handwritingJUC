@@ -1,8 +1,6 @@
-package IO.wendyNetty;
+package wendyNetty.processors.httpProcessor;
 
-import IO.netUtils.json.test.Person;
-
-import java.nio.ByteBuffer;
+import wendyNetty.processors.httpProcessor.utils.json.test.Person;
 
 public class CommandHandler {
 

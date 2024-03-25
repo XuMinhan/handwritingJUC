@@ -1,4 +1,4 @@
-package IO.netUtils.json.test;
+package wendyNetty.processors.httpProcessor.utils.json.test;
 
 public class Person {
     private String name;

@@ -1,4 +1,6 @@
-package IO.wendyNetty;
+package wendyNetty;
+
+import wendyNetty.processors.httpProcessor.HttpProcessor;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

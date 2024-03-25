@@ -1,4 +1,4 @@
-package IO.wendyNetty;
+package wendyNetty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
