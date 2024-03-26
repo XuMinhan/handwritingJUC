@@ -2,7 +2,7 @@
 
 wendy为本人英文名
 
-此项目为手写JUC，netty，json工具类，http请求和返回组装
+此项目为手写JUC，netty，json工具类，http请求和返回组装，依赖注入
 
 等有趣小项目
 
@@ -67,6 +67,8 @@ take方法中，抛出条件变量抛出的中断异常，提供调用方线程�
 http协议解析，json解析，组装response
 
 仿spring注解式方法调用
+
+仿spring依赖注入，单例多例两种方式
 
 
 ### 代码，我有三不写
