@@ -4,14 +4,14 @@ import wendyNetty.processors.httpProcessor.utils.json.test.Person;
 
 public class CommandHandler {
 
-    @Url(method = "GET", url = "/test1")
+    @GetMapping("/test1")
     public Person handleCommand1(@RequestParam("name") String name , @RequestParam("age") int age) {
         // 处理命令1的逻辑
         // 实现发送响应到clientChannel等逻辑
         return new Person(name, age);
     }
 
-    @Url(method = "POST" , url = "/test2")
+    @PostMapping("/test2")
     public Person handleCommand2(@RequestBody Person person) {
         // 处理命令1的逻辑
         System.out.println(person);

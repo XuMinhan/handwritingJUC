@@ -28,104 +28,82 @@ public class HttpProcessor {
     public HttpProcessor() {
         this.handler = new CommandHandler();
         for (Method method : handler.getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Url.class)) {
-                Url url = method.getAnnotation(Url.class);
-                commandMap.put(url.url(), method);
+            if (method.isAnnotationPresent(GetMapping.class)) {
+                GetMapping url = method.getAnnotation(GetMapping.class);
+                commandMap.put(url.value(), method);
+            } else if (method.isAnnotationPresent(PostMapping.class)) {
+                PostMapping url = method.getAnnotation(PostMapping.class);
+                commandMap.put(url.value(), method);
             }
         }
     }
 
     public void process(SocketChannel clientChannel, ByteBuffer requestData) throws IOException {
-        // 根据commandId找到对应的处理逻辑，并执行
-        // 这里仅作为示例，您需要根据实际逻辑填充
-
-
         InputStream inputStream = new ByteArrayInputStream(requestData.array());
         HttpRequestParser.HttpRequest parse = HttpRequestParser.parse(inputStream);
-        Method method = commandMap.get(parse.getPath());
-
-//        System.out.println(parse.getPath());
-//        System.out.println(parse.getMethod());
-//        System.out.println(parse.getParameters());
-//        System.out.println(parse.getHeaders());
-//        System.out.println(parse.getBody());
-
-        String requestMethod = parse.getMethod();
-        String body = parse.getBody();
+        String requestPath = parse.getPath();
+        String requestMethod = parse.getMethod().toUpperCase();
         Map<String, String> requestParams = parse.getParameters();
+
+        // 假设handler是已经定义好的处理实例
+
+        Method method = commandMap.get(requestPath);
+
         if (method != null) {
-            // 检查这个Method是否支持当前的请求方法
-            Url urlAnnotation = method.getAnnotation(Url.class);
-            if (urlAnnotation != null && urlAnnotation.method().equalsIgnoreCase(requestMethod)) {
-                // 如果请求方法匹配，执行方法
-                if (requestMethod.equals("GET")) {
-                    try {
-                        Parameter[] parameters = method.getParameters();
-                        Object[] args = new Object[parameters.length];
-                        for (int i = 0; i < parameters.length; i++) {
-                            RequestParam requestParamAnnotation = parameters[i].getAnnotation(RequestParam.class);
-                            if (requestParamAnnotation != null) {
-                                // 从请求参数中获取值，并将其转换为正确的类型
-                                String paramName = requestParamAnnotation.value();
-                                String paramValue = requestParams.get(paramName);
-                                Class<?> paramType = parameters[i].getType();
-                                Object argValue = convertStringToType(paramValue, paramType);
-                                args[i] = argValue;
-                            }
-                        }
-
-                        Object resp = method.invoke(handler, args);
-                        String responseData = HttpResponseUtils.buildHttpResponse(resp);
-                        ByteBuffer responseBuffer = ByteBuffer.wrap(responseData.getBytes());
-                        clientChannel.write(responseBuffer);
-                        clientChannel.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }if (requestMethod.equals("POST")) {
-                    try {
-                        // 直接获取方法的唯一参数，假设这个参数使用了@RequestBody注解
-                        Parameter parameter = method.getParameters()[0]; // 直接获取第一个（也是唯一一个）参数
-                        // 反序列化JSON字符串为Java对象
-                        Class<?> paramType = parameter.getType();
-                        Object argValue = WendyJsonUtils.deserialize(body, paramType);
-
-                        // 调用处理方法
-                        Object resp = method.invoke(handler, new Object[]{argValue});
-
-                        // 序列化响应对象为JSON字符串
-                        String responseData = HttpResponseUtils.buildHttpResponse(resp);
-                        ByteBuffer responseBuffer = ByteBuffer.wrap(responseData.getBytes());
-
-                        // 发送响应
-                        clientChannel.write(responseBuffer);
-                        clientChannel.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-                // 如果找到了URL对应的方法，但是请求方法不匹配，返回405错误
-                String methodNotAllowedResponse = "HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\n\r\n";
-                ByteBuffer responseBuffer = ByteBuffer.wrap(methodNotAllowedResponse.getBytes());
-                try {
-                    clientChannel.write(responseBuffer);
-                    clientChannel.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            // 如果没有找到URL对应的方法，返回404错误
-            String notFoundResponse = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n";
-            ByteBuffer responseBuffer = ByteBuffer.wrap(notFoundResponse.getBytes());
             try {
-                clientChannel.write(responseBuffer);
-                clientChannel.close();
+                boolean methodMatch = false;
+                Object response = null;
+                if ("GET".equals(requestMethod) && method.isAnnotationPresent(GetMapping.class)) {
+
+                    Parameter[] parameters = method.getParameters();
+                    Object[] args = new Object[parameters.length];
+                    for (int i = 0; i < parameters.length; i++) {
+                        RequestParam requestParamAnnotation = parameters[i].getAnnotation(RequestParam.class);
+                        if (requestParamAnnotation != null) {
+                            // 从请求参数中获取值，并将其转换为正确的类型
+                            String paramName = requestParamAnnotation.value();
+                            String paramValue = requestParams.get(paramName);
+                            Class<?> paramType = parameters[i].getType();
+                            Object argValue = convertStringToType(paramValue, paramType);
+                            args[i] = argValue;
+                        }
+                    }
+                    // 确保请求方法和路径与GetMapping注解匹配
+                    methodMatch = true;
+                    response = method.invoke(handler, args);
+
+                } else if ("POST".equals(requestMethod) && method.isAnnotationPresent(PostMapping.class)) {
+                    // 确保请求方法和路径与PostMapping注解匹配
+                    methodMatch = true;
+                    Parameter parameter = method.getParameters()[0]; // 假设POST方法只有一个参数
+                    Class<?> paramType = parameter.getType();
+                    Object argValue = WendyJsonUtils.deserialize(parse.getBody(), paramType);
+                    response = method.invoke(handler, argValue);
+                }
+
+                if (!methodMatch) {
+                    sendResponse(clientChannel, "HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\n\r\n");
+                    return;
+                }
+
+                // 处理成功，发送响应
+                String responseData = HttpResponseUtils.buildHttpResponse(response);
+                sendResponse(clientChannel, responseData);
+
             } catch (Exception e) {
                 e.printStackTrace();
+                sendResponse(clientChannel, "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\n\r\n");
             }
+        } else {
+            // 没有找到匹配的处理方法，发送404响应
+            sendResponse(clientChannel, "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n");
         }
+    }
+
+    private void sendResponse(SocketChannel clientChannel, String response) throws IOException {
+        ByteBuffer responseBuffer = ByteBuffer.wrap(response.getBytes());
+        clientChannel.write(responseBuffer);
+        clientChannel.close();
     }
 
     public Object convertStringToType(String value, Class<?> type) {
