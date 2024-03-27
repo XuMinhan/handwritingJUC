@@ -17,7 +17,7 @@ public class HttpClientExample {
             HttpPost request = new HttpPost("http://localhost:8080/test2"); // 替换为你的目标URL
 
             // 构造Person对象并转换成JSON
-            Person person = new Person("xmh", 18);
+            Person person = new Person("xmh", 1222);
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(person);
 

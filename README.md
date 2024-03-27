@@ -66,9 +66,14 @@ take方法中，抛出条件变量抛出的中断异常，提供调用方线程�
 
 http协议解析，json解析，组装response
 
-仿spring注解式方法调用
+
+
+### wendySpring
+仿spring注解式方法调用，实现GetMapping和PostMapping，RequestBody和RequestParm
 
 仿spring依赖注入，单例多例两种方式
+
+
 
 
 ### 代码，我有三不写

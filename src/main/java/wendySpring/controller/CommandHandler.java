@@ -24,7 +24,7 @@ public class CommandHandler {
         // 处理命令1的逻辑
         System.out.println(person);
         // 实现发送响应到clientChannel等逻辑
-        return new Person("xmh", 18);
+        return person;
     }
 
     // 更多命令处理方法...
