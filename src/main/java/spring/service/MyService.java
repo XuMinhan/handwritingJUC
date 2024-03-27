@@ -1,6 +1,6 @@
 package spring.service;
 
-import spring.springBean.Component;
+import spring.sprintConsist.springBean.Component;
 
 @Component
 public class MyService {
