@@ -48,9 +48,6 @@ public class GateWayProcessor {
 //        OnlyString onlyString = new OnlyString(firstPathComponent);
 //        AddressAndPort transFormAddressAndPort = (AddressAndPort) HttpPostRequest.sendPostRequest(nacosAddressAndPort, "/getRandomAddressAndPortByPost", onlyString,AddressAndPort.class);
         AddressAndPort transFormAddressAndPort = (AddressAndPort) HttpPostRequest.sendGetRequest(nacosAddressAndPort, "/getRandomAddressAndPortByGet",AddressAndPort.class,"serverId",firstPathComponent );
-
-        System.out.println(2);
-
         System.out.println(transFormAddressAndPort);
 
         try (Selector selector = Selector.open();
