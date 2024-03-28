@@ -1,7 +1,7 @@
-package wendySpring;
+package wendySpring.soManyApplications.cloudWendyOneService;
 
+import wendySpring.soManyApplications.cloudWendyOneService.controller.CommandHandler;
 import wendySpring.springConsist.springBean.Resource;
-import wendySpring.controller.CommandHandler;
 
 public class HttpControllerRegister {
     @Resource

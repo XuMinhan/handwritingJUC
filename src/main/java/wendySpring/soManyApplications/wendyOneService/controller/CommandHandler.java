@@ -1,7 +1,7 @@
-package wendySpring.controller;
+package wendySpring.soManyApplications.wendyOneService.controller;
 
 import org.apache.http.HttpRequest;
-import wendySpring.service.MyService;
+import wendySpring.soManyApplications.wendyOneService.service.MyService;
 import wendySpring.springConsist.springBean.Resource;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.*;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.utils.json.test.Person;

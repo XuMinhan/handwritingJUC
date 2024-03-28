@@ -1,6 +1,5 @@
 package wendySpring.springConsist.wendyNetty.processors.httpProcessor;
 
-import wendySpring.HttpControllerRegister;
 import wendySpring.springConsist.springBean.Resource;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.utils.httpRequestParser.HttpRequestParser;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.utils.json.WendyJsonUtils;

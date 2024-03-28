@@ -12,9 +12,13 @@ public class EventLoopRegister {
 
     private ForwardingProcessor forwardingProcessor;
 
+
+
     public EventLoopRegister(Class<?> controllerRegister) {
-        httpProcessor = new HttpProcessor(controllerRegister);
-        forwardingProcessor = new ForwardingProcessor();
+        httpProcessor = new HttpProcessor(controllerRegister);//纯本地
+    }
+    public EventLoopRegister() {
+        forwardingProcessor = new ForwardingProcessor();//纯转发
     }
 
     public void httpProcess(SocketChannel clientChannel, ByteBuffer requestData) throws IOException {

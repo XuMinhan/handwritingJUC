@@ -2,6 +2,8 @@ package wendySpring.springConsist.wendyNetty;
 
 public class AddressAndPort {
     private String serverAddress;
+    private int port;
+
 
     public String getServerAddress() {
         return serverAddress;
@@ -27,5 +29,4 @@ public class AddressAndPort {
         this.port = port;
     }
 
-    private int port;
 }

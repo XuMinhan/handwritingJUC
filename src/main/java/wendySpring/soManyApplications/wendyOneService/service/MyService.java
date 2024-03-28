@@ -1,4 +1,4 @@
-package wendySpring.service;
+package wendySpring.soManyApplications.wendyOneService.service;
 
 import wendySpring.springConsist.springBean.Component;
 
