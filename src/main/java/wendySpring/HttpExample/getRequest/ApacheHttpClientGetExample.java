@@ -8,7 +8,7 @@ import org.apache.http.util.EntityUtils;
 public class ApacheHttpClientGetExample {
     public static void main(String[] args) {
         // 构造请求URL，包括参数
-        String urlWithParams = "http://localhost:8080/test1?age=18&name=lhk";
+        String urlWithParams = "http://localhost:8081/test1?age=18&name=lhk";
 
         // 使用try-with-resources确保资源正确关闭
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {

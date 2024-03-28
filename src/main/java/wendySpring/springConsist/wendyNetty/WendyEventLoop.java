@@ -18,7 +18,29 @@ public class WendyEventLoop {
     private ExecutorService pool;
 
     private EventLoopRegister eventLoopRegister;
+
+    private AddressAndPort addressAndPort;
     private int threadPoolSize;
+    //eventloop功能，不写为http，0为http,1为转发
+
+
+
+    public WendyEventLoop(int port, int threadPoolSize,Class<?> controllerRegister, AddressAndPort addressAndPort)  {
+        // 初始化选择器、服务器套接字通道和线程池
+        try {
+            selector = Selector.open();
+            serverSocketChannel = ServerSocketChannel.open();
+            serverSocketChannel.bind(new InetSocketAddress(port));
+            serverSocketChannel.configureBlocking(false);
+            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            pool = Executors.newFixedThreadPool(threadPoolSize);
+            eventLoopRegister = new EventLoopRegister(controllerRegister);
+            this.addressAndPort = addressAndPort;
+        }catch (IOException e){
+            System.out.println("IO错误");
+        }
+
+    }
 
     public WendyEventLoop(int port, int threadPoolSize,Class<?> controllerRegister)  {
         // 初始化选择器、服务器套接字通道和线程池
@@ -30,6 +52,23 @@ public class WendyEventLoop {
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             pool = Executors.newFixedThreadPool(threadPoolSize);
             eventLoopRegister = new EventLoopRegister(controllerRegister);
+        }catch (IOException e){
+            System.out.println("IO错误");
+        }
+
+    }
+
+    public WendyEventLoop(int port,Class<?> controllerRegister, AddressAndPort addressAndPort){
+        try {
+            // 初始化选择器、服务器套接字通道和线程池
+            selector = Selector.open();
+            serverSocketChannel = ServerSocketChannel.open();
+            serverSocketChannel.bind(new InetSocketAddress(port));
+            serverSocketChannel.configureBlocking(false);
+            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            pool = Executors.newFixedThreadPool(10);
+            eventLoopRegister = new EventLoopRegister(controllerRegister);
+            this.addressAndPort = addressAndPort;
         }catch (IOException e){
             System.out.println("IO错误");
         }
@@ -51,7 +90,6 @@ public class WendyEventLoop {
         }
 
     }
-
     Map<SelectionKey, Boolean> keyProcessingStatus = new ConcurrentHashMap<>();
 
     public void start() {
@@ -66,7 +104,6 @@ public class WendyEventLoop {
 
                 while (iter.hasNext()) {
                     SelectionKey key = iter.next();
-
 
                     Boolean isProcessing = keyProcessingStatus.getOrDefault(key, Boolean.FALSE);
 
@@ -144,6 +181,11 @@ public class WendyEventLoop {
 
         // 将累积的数据转换为ByteBuffer，交给controller处理
         ByteBuffer dataBuffer = ByteBuffer.wrap(baos.toByteArray());
-        eventLoopRegister.process(clientChannel, dataBuffer);
+        if (addressAndPort==null) {
+            eventLoopRegister.httpProcess(clientChannel, dataBuffer);
+        }else {
+            eventLoopRegister.forwardingProcess(clientChannel,dataBuffer,addressAndPort.getServerAddress(),addressAndPort.getPort());
+        }
+
     }
 }

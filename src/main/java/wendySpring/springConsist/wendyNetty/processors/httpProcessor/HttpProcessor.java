@@ -30,8 +30,6 @@ public class HttpProcessor {
     private final HashMap<String, MethodAndHandler> commandMap = new HashMap<>();
 
     public HttpProcessor(Class<?> controllerRegister) {
-        // 获取HttpControllerRegister的实例
-//        HttpControllerRegister register = SimpleDIContainer.getInstance(HttpControllerRegister.class);
 
         // 通过反射遍历HttpControllerRegister中所有字段
         for (Field field : controllerRegister.getDeclaredFields()) {
@@ -145,6 +143,7 @@ public class HttpProcessor {
         ByteBuffer responseBuffer = ByteBuffer.wrap(response.getBytes());
         clientChannel.write(responseBuffer);
         clientChannel.close();
+        System.out.println("已经关闭");
     }
 
     public Object convertStringToType(String value, Class<?> type) {
