@@ -142,7 +142,6 @@ public class HttpProcessor {
         ByteBuffer responseBuffer = ByteBuffer.wrap(response.getBytes());
         clientChannel.write(responseBuffer);
         clientChannel.close();
-        System.out.println("已经关闭");
     }
 
     public Object convertStringToType(String value, Class<?> type) {

@@ -14,7 +14,7 @@ public class HttpClientExample {
     public static void main(String[] args) throws Exception {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         try {
-            HttpPost request = new HttpPost("http://localhost:8080/test2"); // 替换为你的目标URL
+            HttpPost request = new HttpPost("http://localhost:8080/firstService/test2"); // 替换为你的目标URL
 
             // 构造Person对象并转换成JSON
             Person person = new Person("xmh", 1222);

@@ -1,6 +1,7 @@
 package wendySpring.springConsist.wendyNetty.processors.gatewayHandler;
 
 import wendySpring.springConsist.wendyNetty.AddressAndPort;
+import wendySpring.springConsist.wendyNetty.OnlyString;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.HttpPostRequest;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.MethodAndHandler;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.utils.httpRequestParser.HttpRequestParser;
@@ -43,9 +44,14 @@ public class GateWayProcessor {
         Map<String, String> requestParams = parse.getParameters();
 
 
-
         String firstPathComponent = getFirstPathComponent(requestPath);
-        AddressAndPort transFormAddressAndPort = (AddressAndPort) HttpPostRequest.sendGetRequest(nacosAddressAndPort, "/getRandomAddressAndPort", Object.class, firstPathComponent);
+//        OnlyString onlyString = new OnlyString(firstPathComponent);
+//        AddressAndPort transFormAddressAndPort = (AddressAndPort) HttpPostRequest.sendPostRequest(nacosAddressAndPort, "/getRandomAddressAndPortByPost", onlyString,AddressAndPort.class);
+        AddressAndPort transFormAddressAndPort = (AddressAndPort) HttpPostRequest.sendGetRequest(nacosAddressAndPort, "/getRandomAddressAndPortByGet",AddressAndPort.class,"serverId",firstPathComponent );
+
+        System.out.println(2);
+
+        System.out.println(transFormAddressAndPort);
 
         try (Selector selector = Selector.open();
              SocketChannel serverChannel = SocketChannel.open()) {

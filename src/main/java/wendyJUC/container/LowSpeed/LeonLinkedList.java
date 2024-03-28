@@ -128,7 +128,6 @@ public class LeonLinkedList<T> {
             System.out.print(current.item + " ");
             current = current.next;
         }
-        System.out.println();
     }
 
 }

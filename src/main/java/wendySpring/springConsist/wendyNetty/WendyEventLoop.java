@@ -17,7 +17,7 @@ import java.util.concurrent.*;
 import java.net.InetAddress;
 
 public class WendyEventLoop {
-    int BUMP_EVERY_SECONDS = 5;
+    int BUMP_EVERY_SECONDS = 30;
     private ServerSocketChannel serverSocketChannel;
     private Selector selector;
     private ExecutorService pool;
@@ -58,7 +58,7 @@ public class WendyEventLoop {
         init(port, null, null);
     }
 
-    // 只有端口和注册信息，即普通的springboot
+    // 只有端口和注册信息，即普通的springboot和nacos
     public WendyEventLoop(int port, Class<?> controllerRegister) throws Exception {
         init(port, controllerRegister, null);
     }
@@ -152,7 +152,6 @@ public class WendyEventLoop {
         if (client != null) {
             client.configureBlocking(false);
             client.register(selector, SelectionKey.OP_READ);
-            System.out.println("Client connected: " + client);
         }
     }
 
@@ -183,11 +182,11 @@ public class WendyEventLoop {
 
 
         ByteBuffer dataBuffer = ByteBuffer.wrap(baos.toByteArray());
-        if (addressAndPort == null && controllerRegister == null){//gateway
+        if (addressAndPort == null && controllerRegister == null){
         }
-        else if (addressAndPort == null) {//无addressAndPort代表仅用于http处理，只需启用http服务器，即nacos
+        else if (addressAndPort == null) {//nacos
             eventLoopRegister.httpProcess(clientChannel, dataBuffer);
-        } else if (controllerRegister == null) {//无controllerRegister代表仅用于转发，只需启动forwarding，要加上获取
+        } else if (controllerRegister == null) {//gateway
 //            eventLoopRegister.forwardingProcess(clientChannel, dataBuffer, addressAndPort.getServerAddress(), addressAndPort.getPort());
             eventLoopRegister.gateWayProcess(addressAndPort,clientChannel,dataBuffer);
         } else {
@@ -201,6 +200,7 @@ public class WendyEventLoop {
     public void startBumping(AddressAndPort addressAndPort, ServiceIdAndAddressPort serviceIdAndAddressPort) {
         scheduler.scheduleAtFixedRate(() -> {
             try {
+                System.out.println("跳动一次");
                 heartBump(addressAndPort, serviceIdAndAddressPort);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -210,6 +210,6 @@ public class WendyEventLoop {
     }
 
     private void heartBump(AddressAndPort addressAndPort, ServiceIdAndAddressPort serviceIdAndAddressPort) throws Exception {
-        HttpPostRequest.sendPostRequest(addressAndPort, "/postUpload", serviceIdAndAddressPort, Object.class);
+        HttpPostRequest.sendPostRequest(addressAndPort, "/heartBeat", serviceIdAndAddressPort, null);
     }
 }

@@ -13,6 +13,14 @@ public class AddressAndPort {
         this.serverAddress = serverAddress;
     }
 
+    @Override
+    public String toString() {
+        return "AddressAndPort{" +
+                "serverAddress='" + serverAddress + '\'' +
+                ", port=" + port +
+                '}';
+    }
+
     public AddressAndPort() {
     }
 

@@ -52,13 +52,19 @@ public class HttpPostRequest {
 
         // 将响应JSON字符串反序列化为对象
         // 如果响应体非空，则尝试反序列化为对象
-        if (response.length() > 0) {
-            return WendyJsonUtils.deserialize(response.toString(), clazz);
+        if (clazz!=null) {
+            if (response.length() > 0) {
+                return WendyJsonUtils.deserialize(response.toString(), clazz);
+            }
         }
+
 
         // 如果响应体为空，返回null或进行其他合适的处理
         return null;
     }
+
+
+
     public static Object sendGetRequest(AddressAndPort addressAndPort, String endpoint, Class<?> clazz,Object... params) throws Exception {
         int port = addressAndPort.getPort();
         String address = addressAndPort.getServerAddress();
@@ -95,10 +101,13 @@ public class HttpPostRequest {
 
         // 将响应JSON字符串反序列化为对象
         // 如果响应体非空，则尝试反序列化为对象
-        if (response.length() > 0) {
-            return WendyJsonUtils.deserialize(response.toString(), clazz);
+        if (clazz!=null) {
+            if (response.length() > 0) {
+                return WendyJsonUtils.deserialize(response.toString(), clazz);
+            }
         }
 
+
         // 如果响应体为空，返回null或进行其他合适的处理
-        return null;    }
+        return null; }
 }

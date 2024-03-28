@@ -4,6 +4,7 @@ import wendySpring.soManyApplications.wendyCos.server.ContainerService;
 import wendySpring.springConsist.springBean.Resource;
 import wendySpring.springConsist.springBean.Result;
 import wendySpring.springConsist.wendyNetty.AddressAndPort;
+import wendySpring.springConsist.wendyNetty.OnlyString;
 import wendySpring.springConsist.wendyNetty.ServiceIdAndAddressPort;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.*;
 
@@ -28,8 +29,14 @@ public class NacosRegisterController {
         return new Result(containerService.upload(serverId, address, port));
     }
 
-    @GetMapping("/getRandomAddressAndPort")
-    public AddressAndPort getAddressAndPort(@RequestParam("serverId")String serverId){
+    @PostMapping("/getRandomAddressAndPortByPost")
+    public AddressAndPort getAddressAndPort(@RequestBody OnlyString onlyString){
+        System.out.println(onlyString);
+        return containerService.getAddressAndPort(onlyString.getAnything());
+    }
+
+    @GetMapping("/getRandomAddressAndPortByGet")
+    public AddressAndPort getAddressAndPortByGet(@RequestParam("serverId")String serverId){
         return containerService.getAddressAndPort(serverId);
     }
 
