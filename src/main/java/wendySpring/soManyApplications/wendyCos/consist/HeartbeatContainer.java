@@ -23,5 +23,6 @@ public class HeartbeatContainer {
 
     public void updateHeartbeat() {
         this.lastHeartbeat = Instant.now(); // 更新心跳时间
+        System.out.println(Instant.now());
     }
 }

@@ -12,7 +12,7 @@ public class CommandHandler {
     @Resource
     MyService myService;
 
-    @GetMapping("/test1")
+    @GetMapping("/firstService/test1")
     public Person handleCommand1(HttpRequest httpRequest, @RequestParam("name") String name , @RequestParam("age") int age) {
         // 处理命令1的逻辑
         // 实现发送响应到clientChannel等逻辑
@@ -20,7 +20,7 @@ public class CommandHandler {
         return new Person(name, age);
     }
 
-    @PostMapping("/test2")
+    @PostMapping("/firstService/test2")
     public Person handleCommand2(HttpRequest httpRequest,@RequestBody Person person) {
         // 处理命令1的逻辑
         System.out.println(person);

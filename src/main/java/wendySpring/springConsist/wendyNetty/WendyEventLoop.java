@@ -54,7 +54,9 @@ public class WendyEventLoop {
     public WendyEventLoop(int port, AddressAndPort addressAndPort) {
         init(port, null, addressAndPort);
     }
-
+    public WendyEventLoop(int port) {
+        init(port, null, null);
+    }
 
     // 只有端口和注册信息，即普通的springboot
     public WendyEventLoop(int port, Class<?> controllerRegister) throws Exception {
@@ -181,14 +183,15 @@ public class WendyEventLoop {
 
 
         ByteBuffer dataBuffer = ByteBuffer.wrap(baos.toByteArray());
-
-        if (addressAndPort == null && controllerRegister != null) {//无addressAndPort代表仅用于http处理，只需启用http服务器，即nacos
+        if (addressAndPort == null && controllerRegister == null){//gateway
+        }
+        else if (addressAndPort == null) {//无addressAndPort代表仅用于http处理，只需启用http服务器，即nacos
             eventLoopRegister.httpProcess(clientChannel, dataBuffer);
-        } else if (addressAndPort != null && controllerRegister == null) {//无controllerRegister代表仅用于转发，只需启动forwarding，gateway，要加上获取
-            eventLoopRegister.forwardingProcess(clientChannel, dataBuffer, addressAndPort.getServerAddress(), addressAndPort.getPort());
-        } else if (addressAndPort != null) {
-
-
+        } else if (controllerRegister == null) {//无controllerRegister代表仅用于转发，只需启动forwarding，要加上获取
+//            eventLoopRegister.forwardingProcess(clientChannel, dataBuffer, addressAndPort.getServerAddress(), addressAndPort.getPort());
+            eventLoopRegister.gateWayProcess(addressAndPort,clientChannel,dataBuffer);
+        } else {
+            eventLoopRegister.httpProcess(clientChannel, dataBuffer);
         }
     }
 

@@ -9,7 +9,7 @@ public class SimpleHttpPostClient {
     public static void main(String[] args) {
         try {
             // URL和JSON数据
-            String url = "http://localhost:8080/test2"; // 替换为你的目标URL
+            String url = "http://localhost:8080/firstService/test2"; // 替换为你的目标URL
             String jsonInputString = "{\"name\": \"xmh\", \"age\": 18}";
 
             // 创建URL和HttpURLConnection

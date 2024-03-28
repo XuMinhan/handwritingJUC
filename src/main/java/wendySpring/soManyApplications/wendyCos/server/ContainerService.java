@@ -14,8 +14,10 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class ContainerService {
 
-    int CHECK_EVERY_SECOND = 10;
-    private final Duration heartbeatTimeout = Duration.ofSeconds(CHECK_EVERY_SECOND); // 示例：1分钟超时
+    int CHECK_EVERY_SECOND = 10;  //检查时间
+
+    int HEART_BEAT_TIMEOUT = 10;   //过期时间
+    private final Duration heartbeatTimeout = Duration.ofSeconds(HEART_BEAT_TIMEOUT); // 示例：1分钟超时
 
     private final HashMap<String, List<HeartbeatContainer>> serviceContainer = new HashMap<>();
     private final Random random = new Random();
@@ -78,6 +80,8 @@ public class ContainerService {
             while (iterator.hasNext()) {
                 HeartbeatContainer container = iterator.next();
                 if (Duration.between(container.getLastHeartbeat(), now).compareTo(heartbeatTimeout) > 0) {
+                    System.out.println(container.getLastHeartbeat());
+                    System.out.println(now);
                     // 打印出被删除的服务信息
                     System.out.println("Removing service ID: " + entry.getKey() +
                             ", Address: " + container.getAddressAndPort().getServerAddress() +
