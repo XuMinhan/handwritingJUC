@@ -28,12 +28,13 @@ import java.util.Map;
 
 public class HttpProcessor {
     private final HashMap<String, MethodAndHandler> commandMap = new HashMap<>();
-    public HttpProcessor() {
+
+    public HttpProcessor(Class<?> controllerRegister) {
         // 获取HttpControllerRegister的实例
 //        HttpControllerRegister register = SimpleDIContainer.getInstance(HttpControllerRegister.class);
 
         // 通过反射遍历HttpControllerRegister中所有字段
-        for (Field field : HttpControllerRegister.class.getDeclaredFields()) {
+        for (Field field : controllerRegister.getDeclaredFields()) {
             // 检查字段是否使用了@Resource注解
             if (field.isAnnotationPresent(Resource.class)) {
                 try {
@@ -47,7 +48,7 @@ public class HttpProcessor {
                         MethodAndHandler methodAndHandler = new MethodAndHandler(method, handler);
                         if (method.isAnnotationPresent(GetMapping.class)) {
                             GetMapping getMapping = method.getAnnotation(GetMapping.class);
-                            commandMap.put(getMapping.value(), methodAndHandler );
+                            commandMap.put(getMapping.value(), methodAndHandler);
                         } else if (method.isAnnotationPresent(PostMapping.class)) {
                             PostMapping postMapping = method.getAnnotation(PostMapping.class);
                             commandMap.put(postMapping.value(), methodAndHandler);
@@ -77,18 +78,21 @@ public class HttpProcessor {
                 boolean methodMatch = false;
                 Object response = null;
                 if ("GET".equals(requestMethod) && method.isAnnotationPresent(GetMapping.class)) {
-
                     Parameter[] parameters = method.getParameters();
                     Object[] args = new Object[parameters.length];
                     for (int i = 0; i < parameters.length; i++) {
-                        RequestParam requestParamAnnotation = parameters[i].getAnnotation(RequestParam.class);
-                        if (requestParamAnnotation != null) {
-                            // 从请求参数中获取值，并将其转换为正确的类型
-                            String paramName = requestParamAnnotation.value();
-                            String paramValue = requestParams.get(paramName);
-                            Class<?> paramType = parameters[i].getType();
-                            Object argValue = convertStringToType(paramValue, paramType);
-                            args[i] = argValue;
+                        if (HttpRequestParser.HttpRequest.class.isAssignableFrom(parameters[i].getType())) {
+                            args[i] = parse;
+                        } else {
+                            RequestParam requestParamAnnotation = parameters[i].getAnnotation(RequestParam.class);
+                            if (requestParamAnnotation != null) {
+                                // 从请求参数中获取值，并将其转换为正确的类型
+                                String paramName = requestParamAnnotation.value();
+                                String paramValue = requestParams.get(paramName);
+                                Class<?> paramType = parameters[i].getType();
+                                Object argValue = convertStringToType(paramValue, paramType);
+                                args[i] = argValue;
+                            }
                         }
                     }
                     // 确保请求方法和路径与GetMapping注解匹配
@@ -96,12 +100,26 @@ public class HttpProcessor {
                     response = method.invoke(handler, args);
 
                 } else if ("POST".equals(requestMethod) && method.isAnnotationPresent(PostMapping.class)) {
-                    // 确保请求方法和路径与PostMapping注解匹配
-                    methodMatch = true;
-                    Parameter parameter = method.getParameters()[0]; // 假设POST方法只有一个参数
-                    Class<?> paramType = parameter.getType();
-                    Object argValue = WendyJsonUtils.deserialize(parse.getBody(), paramType);
-                    response = method.invoke(handler, argValue);
+                    Parameter[] parameters = method.getParameters();
+                    Object[] args = new Object[parameters.length];
+                    for (int i = 0; i < parameters.length; i++) {
+                        if (HttpRequestParser.HttpRequest.class.isAssignableFrom(parameters[i].getType())) {
+                            args[i] = parse;
+                        } else {
+                            RequestBody RequestBodyAnnotation = parameters[i].getAnnotation(RequestBody.class);
+                            if (RequestBodyAnnotation != null) {
+                                // 确保请求方法和路径与PostMapping注解匹配
+                                methodMatch = true;
+                                Parameter parameter = method.getParameters()[i]; // 假设POST方法只有一个参数
+                                Class<?> paramType = parameter.getType();
+                                Object argValue = WendyJsonUtils.deserialize(parse.getBody(), paramType);
+                                args[i] = argValue;
+                            }
+                        }
+                    }
+
+                    response = method.invoke(handler, args);
+
                 }
 
                 if (!methodMatch) {

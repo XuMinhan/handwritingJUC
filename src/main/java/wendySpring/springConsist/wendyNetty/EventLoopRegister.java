@@ -9,12 +9,14 @@ import java.nio.channels.SocketChannel;
 public class EventLoopRegister {
     private HttpProcessor httpProcessor;
 
-    public EventLoopRegister() {
-        httpProcessor = new HttpProcessor();
+    public EventLoopRegister(Class<?> controllerRegister) {
+        httpProcessor = new HttpProcessor(controllerRegister);
     }
 
     public void process(SocketChannel clientChannel, ByteBuffer requestData) throws IOException {
         httpProcessor.process(clientChannel, requestData);
     }
+
+
 
 }

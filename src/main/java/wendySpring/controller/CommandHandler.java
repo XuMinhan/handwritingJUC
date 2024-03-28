@@ -1,5 +1,6 @@
 package wendySpring.controller;
 
+import org.apache.http.HttpRequest;
 import wendySpring.service.MyService;
 import wendySpring.springConsist.springBean.Resource;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.*;
@@ -12,7 +13,7 @@ public class CommandHandler {
     MyService myService;
 
     @GetMapping("/test1")
-    public Person handleCommand1(@RequestParam("name") String name , @RequestParam("age") int age) {
+    public Person handleCommand1(HttpRequest httpRequest, @RequestParam("name") String name , @RequestParam("age") int age) {
         // 处理命令1的逻辑
         // 实现发送响应到clientChannel等逻辑
         myService.serviceMethod();
@@ -20,7 +21,7 @@ public class CommandHandler {
     }
 
     @PostMapping("/test2")
-    public Person handleCommand2(@RequestBody Person person) {
+    public Person handleCommand2(HttpRequest httpRequest,@RequestBody Person person) {
         // 处理命令1的逻辑
         System.out.println(person);
         // 实现发送响应到clientChannel等逻辑

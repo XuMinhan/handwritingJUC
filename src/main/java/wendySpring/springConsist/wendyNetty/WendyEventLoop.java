@@ -20,7 +20,7 @@ public class WendyEventLoop {
     private EventLoopRegister eventLoopRegister;
     private int threadPoolSize;
 
-    public WendyEventLoop(int port, int threadPoolSize)  {
+    public WendyEventLoop(int port, int threadPoolSize,Class<?> controllerRegister)  {
         // 初始化选择器、服务器套接字通道和线程池
         try {
             selector = Selector.open();
@@ -29,14 +29,14 @@ public class WendyEventLoop {
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             pool = Executors.newFixedThreadPool(threadPoolSize);
-            eventLoopRegister = new EventLoopRegister();
+            eventLoopRegister = new EventLoopRegister(controllerRegister);
         }catch (IOException e){
             System.out.println("IO错误");
         }
 
     }
 
-    public WendyEventLoop(int port){
+    public WendyEventLoop(int port,Class<?> controllerRegister){
         try {
             // 初始化选择器、服务器套接字通道和线程池
             selector = Selector.open();
@@ -45,7 +45,7 @@ public class WendyEventLoop {
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             pool = Executors.newFixedThreadPool(10);
-            eventLoopRegister = new EventLoopRegister();
+            eventLoopRegister = new EventLoopRegister(controllerRegister);
         }catch (IOException e){
             System.out.println("IO错误");
         }
