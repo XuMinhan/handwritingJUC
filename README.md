@@ -64,16 +64,20 @@ take方法中，抛出条件变量抛出的中断异常，提供调用方线程�
 
 通过hash，实现处理线程与selector独立
 
-http协议解析，json解析，组装response
+http协议解析，json解析，组装response返回，组装request请求
 
 
 
 ### wendySpring
-仿spring注解式方法调用，实现GetMapping和PostMapping，RequestBody和RequestParm
+仿spring注解式方法调用，实现GetMapping和PostMapping，RequestBody和RequestParm，配合json解析器实现实体类的json格式信息传输
 
-仿spring依赖注入，单例多例两种方式
+仿spring依赖注入，单例多例两种方式，通过递归深度检索注解实现在Bean容器中注册实例
 
-实现网关转发功能
+仿spring经典控制层+服务层。通过Controller注释注册所有http请求实现方法接口，通过@Resorce注入
+
+仿nacos，启动nacos后可以注册其他应用，并且实现心跳检测，用hash表存储服务对应的服务url列表和心跳时间，实现转发与心跳检测
+
+实现网关转发功能，网关可以根据服务id从nacos服务器得到注册的应用，并且实现负载均衡
 
 
 ### 代码，我有三不写
