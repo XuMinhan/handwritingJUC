@@ -17,7 +17,12 @@ import java.util.concurrent.*;
 import java.net.InetAddress;
 
 public class WendyEventLoop {
-    int BUMP_EVERY_SECONDS = 30;
+
+    public static int SPRING = 0;
+    public static int NACOS = 1;
+    public static int GATEWAY = 2;
+    public static int ONESPRINGCLOUD = 3;
+    public int BUMP_EVERY_SECONDS = 30;
     private ServerSocketChannel serverSocketChannel;
     private Selector selector;
     private ExecutorService pool;
@@ -26,58 +31,45 @@ public class WendyEventLoop {
 
     private AddressAndPort addressAndPort;
 
-    private Class<?> controllerRegister;
+    private Class<?> applicationClass;
 
     private int port;
+    //0纯spring，1 nacos，2 网关，3 单个springCloud
+    private int function;
 
-
-    //写全代表注册在nacos上,并且启动http服务器,需要增加心跳和注册功能
-    public WendyEventLoop(String serviceId, int port, Class<?> controllerRegister, AddressAndPort addressAndPort) throws Exception {
-        init(port, controllerRegister, addressAndPort);
-        //注册到wencos上
-        //远程地址  addressAndPort
-        //本地地址
-        InetAddress ip = InetAddress.getLocalHost();
-        ServiceIdAndAddressPort serviceIdAndAddressPort = new ServiceIdAndAddressPort(serviceId, ip.getHostAddress(), this.port);
-        Result ret = (Result) HttpPostRequest.sendPostRequest(addressAndPort, "/postUpload", serviceIdAndAddressPort, Result.class);
-        if (ret.getResult() == 1) {
-            System.out.println("注册成功");
-            //开始心跳
-            startBumping(addressAndPort, serviceIdAndAddressPort);
-        } else {
-            System.out.println("注册失败");
-        }
-
-    }
-
-    //只有端口和地址，即转发
-    public WendyEventLoop(int port, AddressAndPort addressAndPort) {
-        init(port, null, addressAndPort);
-    }
-    public WendyEventLoop(int port) {
-        init(port, null, null);
-    }
-
-    // 只有端口和注册信息，即普通的springboot和nacos
-    public WendyEventLoop(int port, Class<?> controllerRegister) throws Exception {
-        init(port, controllerRegister, null);
-    }
 
 
     // 私有初始化方法，被所有构造函数调用
-    private void init(int port, Class<?> controllerRegister, AddressAndPort addressAndPort) {
+    public  WendyEventLoop(String serviceId, int port, Class<?> applicationClass, AddressAndPort addressAndPort, int function) throws Exception {
+
+        if (function == ONESPRINGCLOUD) {
+            InetAddress ip = InetAddress.getLocalHost();
+            ServiceIdAndAddressPort serviceIdAndAddressPort = new ServiceIdAndAddressPort(serviceId, ip.getHostAddress(), this.port);
+            Result ret = (Result) HttpPostRequest.sendPostRequest(addressAndPort, "/postUpload", serviceIdAndAddressPort, Result.class);
+            if (ret.getResult() == 1) {
+                System.out.println("注册成功");
+                //开始心跳
+                startBumping(addressAndPort, serviceIdAndAddressPort);
+            } else {
+                System.out.println("注册失败");
+            }
+        }
+
+
         try {
             selector = Selector.open();
             serverSocketChannel = ServerSocketChannel.open();
             this.port = port;
+            this.function = function;
             serverSocketChannel.bind(new InetSocketAddress(port));
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
             pool = Executors.newFixedThreadPool(10);
-            this.controllerRegister = controllerRegister;
-            if (controllerRegister != null) {
-                eventLoopRegister = new EventLoopRegister(controllerRegister);
-            } else {
+            this.applicationClass = applicationClass;
+
+            if (function == NACOS || function == ONESPRINGCLOUD) {
+                eventLoopRegister = new EventLoopRegister(applicationClass);
+            } else if (function == GATEWAY) {
                 eventLoopRegister = new EventLoopRegister();
             }
             this.addressAndPort = addressAndPort;
@@ -182,16 +174,26 @@ public class WendyEventLoop {
 
 
         ByteBuffer dataBuffer = ByteBuffer.wrap(baos.toByteArray());
-        if (addressAndPort == null && controllerRegister == null){
-        }
-        else if (addressAndPort == null) {//nacos
+
+        if (this.function==SPRING) {
+
+        }else if (this.function==NACOS){
             eventLoopRegister.httpProcess(clientChannel, dataBuffer);
-        } else if (controllerRegister == null) {//gateway
-//            eventLoopRegister.forwardingProcess(clientChannel, dataBuffer, addressAndPort.getServerAddress(), addressAndPort.getPort());
-            eventLoopRegister.gateWayProcess(addressAndPort,clientChannel,dataBuffer);
-        } else {
+        }else if (this.function==GATEWAY){
+            eventLoopRegister.gateWayProcess(addressAndPort, clientChannel, dataBuffer);
+        }else if (this.function==ONESPRINGCLOUD){
             eventLoopRegister.httpProcess(clientChannel, dataBuffer);
         }
+
+//        if (addressAndPort == null && applicationClass == null) {
+//        } else if (addressAndPort == null) {//nacos
+//            eventLoopRegister.httpProcess(clientChannel, dataBuffer);
+//        } else if (applicationClass == null) {//gateway
+////            eventLoopRegister.forwardingProcess(clientChannel, dataBuffer, addressAndPort.getServerAddress(), addressAndPort.getPort());
+//            eventLoopRegister.gateWayProcess(addressAndPort, clientChannel, dataBuffer);
+//        } else {
+//            eventLoopRegister.httpProcess(clientChannel, dataBuffer);
+//        }
     }
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);

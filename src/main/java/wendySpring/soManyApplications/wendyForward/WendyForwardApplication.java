@@ -1,6 +1,5 @@
 package wendySpring.soManyApplications.wendyForward;
 
-import wendySpring.soManyApplications.wendyOneService.HttpControllerRegister;
 import wendySpring.springConsist.SpringApplication;
 import wendySpring.springConsist.wendyNetty.AddressAndPort;
 
@@ -12,7 +11,7 @@ public class WendyForwardApplication {
 //        AddressAndPort remoteAddressAndPort = new AddressAndPort("localhost", 8081);
 //        SpringApplication.run(HttpControllerRegister.class, remoteAddressAndPort);
 //    }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         AddressAndPort remoteAddressAndPort = new AddressAndPort("localhost", 8081);
         SpringApplication.run(8080, remoteAddressAndPort);
     }

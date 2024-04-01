@@ -1,6 +1,5 @@
 package wendySpring.springConsist.wendyNetty.processors.httpProcessor;
 
-import wendySpring.springConsist.springBean.Resource;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.utils.httpRequestParser.HttpRequestParser;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.utils.json.WendyJsonUtils;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.utils.httpResponseUtil.HttpResponseUtils;
@@ -14,10 +13,18 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.lang.reflect.Parameter;
 import java.util.Map;
 
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Opcodes;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 //解决连接的释放报错问题
 //写一个json的生成器和解析器
 //将所有的工具类进行替换
@@ -26,39 +33,58 @@ import java.util.Map;
 
 
 public class HttpProcessor {
-    private final HashMap<String, MethodAndHandler> commandMap = new HashMap<>();
+    private Map<String, MethodAndHandler> commandMap = new HashMap<>();
 
     public HttpProcessor(Class<?> controllerRegister) {
+        // 将包名转换为路径格式
+        String packagePath = controllerRegister.getPackage().getName().replace('.', '/');
+        // 获取类加载器用于找到资源路径
+        Path basePath = Paths.get(ClassLoader.getSystemResource(packagePath).getPath());
 
-        // 通过反射遍历HttpControllerRegister中所有字段
-        for (Field field : controllerRegister.getDeclaredFields()) {
-            // 检查字段是否使用了@Resource注解
-            if (field.isAnnotationPresent(Resource.class)) {
-                try {
-                    // 确保可以访问私有字段
-                    field.setAccessible(true);
-                    // 使用SimpleDIContainer获取字段实例
-                    Object handler = SimpleDIContainer.getInstance(field.getType());
+        try (Stream<Path> paths = Files.walk(basePath)) {
+            paths.filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".class") && path.toString().contains(packagePath))
+                    .forEach(this::processClassFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-                    // 遍历handler中所有方法，检查是否使用了@GetMapping或@PostMapping注解
-                    for (Method method : handler.getClass().getDeclaredMethods()) {
-                        MethodAndHandler methodAndHandler = new MethodAndHandler(method, handler);
-                        if (method.isAnnotationPresent(GetMapping.class)) {
-                            GetMapping getMapping = method.getAnnotation(GetMapping.class);
-                            commandMap.put(getMapping.value(), methodAndHandler);
-                        } else if (method.isAnnotationPresent(PostMapping.class)) {
-                            PostMapping postMapping = method.getAnnotation(PostMapping.class);
-                            commandMap.put(postMapping.value(), methodAndHandler);
+
+    private void processClassFile(Path classFile) {
+        try {
+            ClassReader classReader = new ClassReader(Files.newInputStream(classFile));
+            classReader.accept(new ClassVisitor(Opcodes.ASM9) {
+                @Override
+                public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+                    String className = name.replace('/', '.');
+                    try {
+                        Class<?> clazz = Class.forName(className);
+                        if (clazz.isAnnotationPresent(Controller.class)) {
+                            Object handler = SimpleDIContainer.getInstance(clazz);
+                            for (Method method : clazz.getDeclaredMethods()) {
+                                if (method.isAnnotationPresent(GetMapping.class)) {
+                                    GetMapping getMapping = method.getAnnotation(GetMapping.class);
+                                    commandMap.put(getMapping.value(), new MethodAndHandler(method, handler));
+                                } else if (method.isAnnotationPresent(PostMapping.class)) {
+                                    PostMapping postMapping = method.getAnnotation(PostMapping.class);
+                                    commandMap.put(postMapping.value(), new MethodAndHandler(method, handler));
+                                }
+                            }
                         }
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-            }
+            }, 0);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public void process(SocketChannel clientChannel, ByteBuffer requestData) throws IOException {
+
+
         InputStream inputStream = new ByteArrayInputStream(requestData.array());
         HttpRequestParser.HttpRequest parse = HttpRequestParser.parse(inputStream);
         String requestPath = parse.getPath();
@@ -67,14 +93,19 @@ public class HttpProcessor {
 
         // 假设handler是已经定义好的处理实例
         MethodAndHandler methodAndHandler = commandMap.get(requestPath);
-        Method method = methodAndHandler.getMethod();
-        Object handler = methodAndHandler.getHandler();
 
-        if (method != null) {
+        if (methodAndHandler != null) {
+
+
+            Method method = methodAndHandler.getMethod();
+            Object handler = methodAndHandler.getHandler();
+
+
             try {
                 boolean methodMatch = false;
                 Object response = null;
                 if ("GET".equals(requestMethod) && method.isAnnotationPresent(GetMapping.class)) {
+
                     Parameter[] parameters = method.getParameters();
                     Object[] args = new Object[parameters.length];
                     for (int i = 0; i < parameters.length; i++) {
@@ -97,6 +128,8 @@ public class HttpProcessor {
                     response = method.invoke(handler, args);
 
                 } else if ("POST".equals(requestMethod) && method.isAnnotationPresent(PostMapping.class)) {
+                    System.out.println(1111);
+
                     Parameter[] parameters = method.getParameters();
                     Object[] args = new Object[parameters.length];
                     for (int i = 0; i < parameters.length; i++) {
