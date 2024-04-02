@@ -1,6 +1,5 @@
 package springCloudDEMO.wendyCos;
 
-import wendySpring.soManyApplications.wendyCos.HttpControllerRegisterForNacos;
 import wendySpring.springConsist.SpringApplication;
 
 public class WendyCosApplication {

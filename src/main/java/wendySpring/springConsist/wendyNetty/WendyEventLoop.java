@@ -1,13 +1,11 @@
 package wendySpring.springConsist.wendyNetty;
 
-import wendySpring.springConsist.springBean.Resource;
 import wendySpring.springConsist.springBean.Result;
 import wendySpring.springConsist.wendyNetty.processors.httpProcessor.HttpPostRequest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
@@ -42,18 +40,7 @@ public class WendyEventLoop {
     // 私有初始化方法，被所有构造函数调用
     public  WendyEventLoop(String serviceId, int port, Class<?> applicationClass, AddressAndPort addressAndPort, int function) throws Exception {
 
-        if (function == ONESPRINGCLOUD) {
-            InetAddress ip = InetAddress.getLocalHost();
-            ServiceIdAndAddressPort serviceIdAndAddressPort = new ServiceIdAndAddressPort(serviceId, ip.getHostAddress(), this.port);
-            Result ret = (Result) HttpPostRequest.sendPostRequest(addressAndPort, "/postUpload", serviceIdAndAddressPort, Result.class);
-            if (ret.getResult() == 1) {
-                System.out.println("注册成功");
-                //开始心跳
-                startBumping(addressAndPort, serviceIdAndAddressPort);
-            } else {
-                System.out.println("注册失败");
-            }
-        }
+
 
 
         try {
@@ -73,6 +60,24 @@ public class WendyEventLoop {
                 eventLoopRegister = new EventLoopRegister();
             }
             this.addressAndPort = addressAndPort;
+
+            if (function == ONESPRINGCLOUD) {
+                InetAddress ip = InetAddress.getLocalHost();
+                ServiceIdAndAddressPort serviceIdAndAddressPort = new ServiceIdAndAddressPort(serviceId, ip.getHostAddress(), this.port);
+                System.out.println(serviceIdAndAddressPort);
+                System.out.println(addressAndPort);
+                Result ret = (Result) HttpPostRequest.sendPostRequest(addressAndPort, "/postUpload", serviceIdAndAddressPort, Result.class);
+                if (ret==null) {
+                    System.out.println("注册失败");
+                }
+                if (ret.getResult() == 1) {
+                    System.out.println("注册成功");
+                    //开始心跳
+                    startBumping(addressAndPort, serviceIdAndAddressPort);
+                } else {
+                    System.out.println("注册失败");
+                }
+            }
         } catch (IOException e) {
             System.out.println("IO错误: " + e.getMessage());
         }

@@ -128,7 +128,6 @@ public class HttpProcessor {
                     response = method.invoke(handler, args);
 
                 } else if ("POST".equals(requestMethod) && method.isAnnotationPresent(PostMapping.class)) {
-                    System.out.println(1111);
 
                     Parameter[] parameters = method.getParameters();
                     Object[] args = new Object[parameters.length];
