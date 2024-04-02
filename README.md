@@ -72,6 +72,6 @@ http协议解析，json解析，组装response返回，组装request请求
 
 实现网关转发功能，网关可以根据服务id从nacos服务器得到注册的应用，并且实现负载均衡
 
-
+项目暂停：阅读源码ing
 
 <span style="color: red;">***仅做教学目的***</span>
