@@ -1,11 +1,16 @@
 package wendyJUC.lock;
 
+import wendyJUC.container.LowSpeed.LeonBlockingQueue;
 import wendyJUC.container.LowSpeed.LeonHashMap;
 import sun.misc.Unsafe;
+
 import java.lang.reflect.Field;
 
 public class CASLock {
     private LeonHashMap<String, ConditionObject> conditionMap = new LeonHashMap<>();
+
+    private final LeonBlockingQueue<Thread> waitingThreads;
+
 
     public ConditionObject newCondition(String conditionName) {
         // Lazy initialization of ConditionObject
@@ -21,6 +26,7 @@ public class CASLock {
         }
         return condition;
     }
+
     private static final Unsafe unsafe;
     private static final long valueOffset;
     private volatile int state = 0;
@@ -32,7 +38,16 @@ public class CASLock {
             unsafe = (Unsafe) theUnsafeInstance.get(Unsafe.class);
 
             valueOffset = unsafe.objectFieldOffset(CASLock.class.getDeclaredField("state"));
-        } catch (Exception ex) { throw new Error(ex); }
+        } catch (Exception ex) {
+            throw new Error(ex);
+        }
+    }
+
+    public CASLock() {
+        waitingThreads = new LeonBlockingQueue<>(1000);
+    }
+    public CASLock(Integer capacity) {
+        waitingThreads = new LeonBlockingQueue<>(capacity);
     }
 
     public void lock() {

@@ -3,10 +3,12 @@ package wendyJUC.lock;
 
 import wendyJUC.container.LowSpeed.LeonBlockingQueue;
 
+import java.util.concurrent.locks.LockSupport;
+
 public class ConditionObject {
     private final CASLock externalLock; // 重命名传入的锁
     private final CASLock queueLock = new CASLock(); // 新的锁用于同步等待队列
-    private final int DEFAULT_CONDITION_WAITINGTHREAD_LENGTH = 10;
+    private final int DEFAULT_CONDITION_WAITINGTHREAD_LENGTH = 10000;
 
     private final LeonBlockingQueue<Thread> waitingThreads;
 
@@ -14,48 +16,61 @@ public class ConditionObject {
         this.externalLock = lock;
         this.waitingThreads = new LeonBlockingQueue<>(DEFAULT_CONDITION_WAITINGTHREAD_LENGTH);
     }
-    public ConditionObject(CASLock lock,int waitingThreadLength) {
+
+    public ConditionObject(CASLock lock, int waitingThreadLength) {
         this.externalLock = lock;
         this.waitingThreads = new LeonBlockingQueue<>(waitingThreadLength);
     }
 
-    public void await() throws InterruptedException{
+    public void await() throws InterruptedException {
         Thread currentThread = Thread.currentThread();
         queueLock.lock(); // 使用新的CASLock来保护等待队列
         try {
             waitingThreads.put(currentThread);
-        } finally {
             queueLock.unlock();
-        }
-
-        boolean wasInterrupted = false;
-        while (waitingThreads.contains(currentThread)) {
             externalLock.unlock(); // 使用外部锁
-            try {
-                // 这里使用Thread.yield()仅仅是为了简化
-                // 实际中可以使用LockSupport.park()来阻塞线程
-                Thread.yield();
-                if (Thread.interrupted()) { // 检查并清除中断状态
-                    throw new InterruptedException("Thread was interrupted.");
-                }
-            } finally {
-                externalLock.lock(); // 重新获取外部锁
-            }
-        }
+            LockSupport.park();
 
-        if (wasInterrupted) {
-            // 如果在等待时线程被中断，重新设置中断状态
-            currentThread.interrupt();
+        } finally {
+            externalLock.lock(); // 重新获取外部锁
         }
     }
+//    public void await() throws InterruptedException {
+//        Thread currentThread = Thread.currentThread();
+//        queueLock.lock(); // 使用新的CASLock来保护等待队列
+//        try {
+//            waitingThreads.put(currentThread);
+//        } finally {
+//            queueLock.unlock();
+//        }
+//
+//        boolean wasInterrupted = false;
+//        while (waitingThreads.contains(currentThread)) {
+//            externalLock.unlock(); // 使用外部锁
+//            try {
+//                // 这里使用Thread.yield()仅仅是为了简化
+//                // 实际中可以使用LockSupport.park()来阻塞线程
+////                Thread.yield();
+//                SimpleLockSupport.park();
+//                if (Thread.interrupted()) { // 检查并清除中断状态
+//                    throw new InterruptedException("Thread was interrupted.");
+//                }
+//            } finally {
+//                externalLock.lock(); // 重新获取外部锁
+//            }
+//        }
+//
+//        if (wasInterrupted) {
+//            // 如果在等待时线程被中断，重新设置中断状态
+//            currentThread.interrupt();
+//        }
+//    }
 
     public void signal() {
         queueLock.lock(); // 使用新的CASLock来保护等待队列
         try {
-            if (!waitingThreads.isEmpty()) {
-                Thread threadToWake = waitingThreads.poll();
-                // 假设有机制来唤醒这个线程，例如LockSupport.unpark(threadToWake)
-            }
+            Thread t = waitingThreads.poll();
+            LockSupport.unpark(t);
         } finally {
             queueLock.unlock();
         }
@@ -65,15 +80,14 @@ public class ConditionObject {
         queueLock.lock(); // 使用新的CASLock来保护等待队列
         try {
             while (!waitingThreads.isEmpty()) {
-                Thread threadToWake = waitingThreads.poll();
-                // 假设有机制来唤醒所有线程，例如LockSupport.unpark(threadToWake)
+                Thread t = waitingThreads.poll();
+                LockSupport.unpark(t);
+
             }
         } finally {
             queueLock.unlock();
         }
     }
-
-
 
 
 }

@@ -5,8 +5,6 @@ import wendySpring.springConsist.wendyNetty.AddressAndPort;
 
 public class WendyGatewayApplication {
 
-
-
     //端口+nacos地址 = 网关启动器
     public static void main(String[] args) throws Exception {
         AddressAndPort remoteAddressAndPort = new AddressAndPort("localhost", 8858);

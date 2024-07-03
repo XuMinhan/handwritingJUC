@@ -24,7 +24,7 @@ public class SimpleDIContainer {
         // 检查类是否有@Component注解，如果没有，则抛出异常
         if (!(classType.isAnnotationPresent(Component.class) ||
                 classType.isAnnotationPresent(Controller.class))) {
-            throw new IllegalArgumentException("Class " + classType.getName() + " is not annotated with @Component and cannot be instantiated by SimpleDIContainer");
+            throw new IllegalArgumentException("Class " + classType.getName() + " is not annotated with @Component and cannot be instantiated by threeIOCDemo.SimpleDIContainer");
         }
 
         try {

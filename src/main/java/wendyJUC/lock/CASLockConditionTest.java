@@ -33,7 +33,7 @@ public class CASLockConditionTest {
         }).start();
 
         // 多个消费者线程，无限循环消费
-        final int CONSUMER_COUNT = 1; // 消费者数量
+        final int CONSUMER_COUNT =100; // 消费者数量
         for (int j = 0; j < CONSUMER_COUNT; j++) {
             new Thread(() -> {
                 while (true) { // 无限循环

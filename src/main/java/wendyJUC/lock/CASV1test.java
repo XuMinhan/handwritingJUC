@@ -5,14 +5,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class CAStest {
+public class CASV1test {
 
     // 共享资源
     private static int counter = 0;
 
     public static void main(String[] args) throws InterruptedException {
-        final CASLock lock = new CASLock();
-        final int numberOfThreads = 2000; // 线程数量
+        final CASLockV1 lock = new CASLockV1();
+        final int numberOfThreads = 1000; // 线程数量
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch startSignal = new CountDownLatch(1);
         CountDownLatch doneSignal = new CountDownLatch(numberOfThreads);
@@ -26,7 +26,7 @@ public class CAStest {
                     try {
                         // 模拟一些需要同步的工作
 //                        System.out.println("Thread " + Thread.currentThread().getId() + " acquired the lock.");
-                       for (int j = 0;j<1 ;j++){
+                       for (int j = 0;j<10 ;j++){
                             counter++;
                         }
                         // 为了清晰看到效果，让线程睡眠一会儿
