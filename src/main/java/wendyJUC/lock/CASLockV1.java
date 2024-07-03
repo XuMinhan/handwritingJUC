@@ -17,7 +17,7 @@ public class CASLockV1 {
             theUnsafeInstance.setAccessible(true);
             unsafe = (Unsafe) theUnsafeInstance.get(null);
 
-            valueOffset = unsafe.objectFieldOffset(CASLock.class.getDeclaredField("state"));
+            valueOffset = unsafe.objectFieldOffset(CASLockV1.class.getDeclaredField("state"));
         } catch (Exception ex) {
             throw new Error(ex);
         }

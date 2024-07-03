@@ -49,12 +49,7 @@ public class LeonBlockingQueue<T> {
             Thread.yield();  // Use yield to prevent excessive CPU usage
         }
         try {
-            T poll = queue.poll();
-            Thread tmp = (Thread) poll;
-            if (tmp != null) {
-                System.out.println("弹出"+tmp.getName());
-            }
-            return poll;
+            return queue.poll();
         } finally {
             lockState = 0;
         }
