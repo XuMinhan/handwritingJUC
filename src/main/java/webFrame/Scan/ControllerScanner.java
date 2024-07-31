@@ -73,9 +73,15 @@ public class ControllerScanner {
                             for (Method method : clazz.getDeclaredMethods()) {
                                 if (method.isAnnotationPresent(GetMapping.class)) {
                                     GetMapping getMapping = method.getAnnotation(GetMapping.class);
+                                    if (commandMap.containsKey(getMapping.value())) {
+                                        throw new IllegalArgumentException("Duplicate URL: " + getMapping.value());
+                                    }
                                     commandMap.put(getMapping.value(), new MethodAndHandler(method, handler));
                                 } else if (method.isAnnotationPresent(PostMapping.class)) {
                                     PostMapping postMapping = method.getAnnotation(PostMapping.class);
+                                    if (commandMap.containsKey(postMapping.value())) {
+                                        throw new IllegalArgumentException("Duplicate URL: " + postMapping.value());
+                                    }
                                     commandMap.put(postMapping.value(), new MethodAndHandler(method, handler));
                                 }
                             }
