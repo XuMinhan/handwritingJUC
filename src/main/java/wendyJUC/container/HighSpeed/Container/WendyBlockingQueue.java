@@ -1,12 +1,18 @@
 package wendyJUC.container.HighSpeed.Container;
 
-import wendyJUC.lock.CASLock;
-import wendyJUC.lock.ConditionObject;
+import wendyJUC.CASLock.*;
 import wendyJUC.container.LowSpeed.LeonLinkedList;
 public class WendyBlockingQueue<T> {
+    @Override
+    public String toString() {
+        return "WendyBlockingQueue{" +
+                "queue=" + queue +
+                '}';
+    }
+
     private final LeonLinkedList<T> queue = new LeonLinkedList<>();
     private final int capacity;
-    private final CASLock lock = new CASLock();
+    private final CASLockV2 lock = new CASLockV2();
     private final ConditionObject notEmpty = lock.newCondition("notEmpty");
     private final ConditionObject notFull = lock.newCondition("notFull");
 

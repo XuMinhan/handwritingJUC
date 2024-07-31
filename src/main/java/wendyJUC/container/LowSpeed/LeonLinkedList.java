@@ -4,6 +4,14 @@ import java.util.NoSuchElementException;
 
 public class LeonLinkedList<T> {
     private Node<T> head; // 链表头节点
+
+    @Override
+    public String toString() {
+        return "LeonLinkedList{" +
+                "head=" + head +
+                '}';
+    }
+
     private int size = 0; // 链表大小
 
     private static class Node<T> {
@@ -13,6 +21,14 @@ public class LeonLinkedList<T> {
         Node(T element, Node<T> next) {
             this.item = element;
             this.next = next;
+        }
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "item=" + item +
+                    ", next=" + next +
+                    '}';
         }
     }
 

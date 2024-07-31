@@ -1,7 +1,6 @@
 package wendyJUC.thread;
 
-import wendyJUC.lock.CASLock;
-import wendyJUC.lock.ConditionObject;
+import wendyJUC.CASLock.*;
 import wendyJUC.container.HighSpeed.BaseType.WendyBoolean;
 import wendyJUC.container.HighSpeed.BaseType.WendyInteger;
 import wendyJUC.container.HighSpeed.Container.WendyBlockingQueue;
@@ -18,7 +17,7 @@ public class AdvancedThreadPool {
 
     private final WendyInteger activeThreads = new WendyInteger(0);
 
-    private final CASLock ThreadPoolLock = new CASLock();
+    private final CASLockV2 ThreadPoolLock = new CASLockV2();
     private final ConditionObject termination = ThreadPoolLock.newCondition("terminal");
 
     public AdvancedThreadPool(int corePoolSize, int maximumPoolSize, int queueSize) {

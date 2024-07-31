@@ -1,6 +1,6 @@
 package wendyJUC.container.HighSpeed.Container;
 
-import wendyJUC.lock.CASLock;
+import wendyJUC.CASLock.CASLock;
 import wendyJUC.container.HighSpeed.MyMap;
 
 public class WendyHashMap<K, V> implements MyMap<K, V> {

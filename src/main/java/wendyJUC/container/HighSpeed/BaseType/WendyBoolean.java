@@ -1,6 +1,6 @@
 package wendyJUC.container.HighSpeed.BaseType;
 
-import wendyJUC.lock.CASLock;
+import wendyJUC.CASLock.CASLock;
 
 public class WendyBoolean {
     private volatile boolean value;
