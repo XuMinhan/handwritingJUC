@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supermarket Price Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .layout {
+            display: flex;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            height: 100vh;
+            padding-top: 20px;
+        }
+        .sidebar h2 {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 1px solid #444;
+        }
+        .sidebar ul li:hover {
+            background-color: #575757;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .content-header {
+            background-color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 10px;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .accept {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .reject {
+            background-color: #f44336;
+            color: white;
+        }
+        .feedback {
+            display: none;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Manager Panel</h2>
+        <ul>
+            <li onclick="showSection('price-management')">Change Prices</li>
+            <li>Monitor Stock</li>
+            <li>Sales Reports</li>
+            <li>Settings</li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Price Management Section -->
+        <div class="content-header" id="price-management">
+            <h2>Price Change Requests from Boss</h2>
+            <p>Please review the price change requests below and confirm your actions.</p>
+            <table>
+                <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Product ID</th>
+                    <th>Original Price</th>
+                    <th>New Price</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Apple</td>
+                    <td>001</td>
+                    <td>$1.00</td>
+                    <td>$1.20</td>
+                    <td>
+                        <div class="button-group">
+                            <button class="accept" onclick="showFeedback('accept-feedback')">Accept</button>
+                            <button class="reject" onclick="showFeedback('reject-feedback')">Reject</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Banana</td>
+                    <td>002</td>
+                    <td>$0.50</td>
+                    <td>$0.55</td>
+                    <td>
+                        <div class="button-group">
+                            <button class="accept" onclick="showFeedback('accept-feedback')">Accept</button>
+                            <button class="reject" onclick="showFeedback('reject-feedback')">Reject</button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Accept Feedback -->
+        <div class="feedback" id="accept-feedback">
+            <h2>Price Change Accepted</h2>
+            <p>The price change has been successfully accepted and updated in the system.</p>
+            <button onclick="showSection('price-management')">Back to Price Management</button>
+        </div>
+
+        <!-- Reject Feedback -->
+        <div class="feedback" id="reject-feedback">
+            <h2>Price Change Rejected</h2>
+            <p>You have rejected the price change request. Would you like to set a different price manually?</p>
+            <input type="text" placeholder="Enter new price">
+            <div class="button-group">
+                <button class="accept">Submit New Price</button>
+                <button onclick="showSection('price-management')">Back to Price Management</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showFeedback(feedbackId) {
+        document.getElementById('price-management').style.display = 'none';
+        document.getElementById('accept-feedback').style.display = 'none';
+        document.getElementById('reject-feedback').style.display = 'none';
+
+        document.getElementById(feedbackId).style.display = 'block';
+    }
+
+    function showSection(sectionId) {
+        document.getElementById('price-management').style.display = 'block';
+        document.getElementById('accept-feedback').style.display = 'none';
+        document.getElementById('reject-feedback').style.display = 'none';
+    }
+</script>
+</body>
+</html>

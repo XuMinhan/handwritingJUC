@@ -15,7 +15,7 @@ public class CAStest {
 
     public static void main(String[] args) throws InterruptedException {
         final CASLockV2 lock = new CASLockV2();
-        final int numberOfThreads = 300; // 线程数量
+        final int numberOfThreads = 100; // 线程数量
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch startSignal = new CountDownLatch(1);
         CountDownLatch doneSignal = new CountDownLatch(numberOfThreads);

@@ -5,10 +5,10 @@ import webFrame.utils.json.test.Person;
 
 @Controller
 public class MethodTest2 {
-    @GetMapping("/testGet")
-    public Person testGet(@RequestParam("name") String name, @RequestParam("age") Integer age) {
-        return new Person(name,age);
-    }
+//    @GetMapping("/testGet")
+//    public Person testGet(@RequestParam("name") String name, @RequestParam("age") Integer age) {
+//        return new Person(name,age);
+//    }
     @GetMapping("/testGetReturn1")
     public Integer testGetReturn1(@RequestParam("name") String name, @RequestParam("age") Integer age) {
         return 1;

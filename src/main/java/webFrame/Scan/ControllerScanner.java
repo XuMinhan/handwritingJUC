@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 public class ControllerScanner {
-    private Map<String, MethodAndHandler> commandMap = new HashMap<>();
+    private final Map<String, MethodAndHandler> commandMap = new HashMap<>();
     private static final Map<Class<?>, Object> singletonInstances = new ConcurrentHashMap<>();
 
     private Object getInstance(Class<?> clazz) {
@@ -29,9 +29,7 @@ public class ControllerScanner {
                 Object newHandler = clazz.newInstance();
                 singletonInstances.put(clazz, newHandler);
                 return newHandler;
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         } else {

@@ -4,6 +4,7 @@ package handWritingNetty.Test;
 import handWritingNetty.ChannelInitializer;
 import handWritingNetty.ChannelPipeline;
 import handWritingNetty.EventGroup;
+import handWritingNetty.handler.HttpRequestLoggerHandler;
 import webFrame.handlerForWeb.HttpResponseHandler;
 
 public class ServerTest {

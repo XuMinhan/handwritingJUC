@@ -10,7 +10,7 @@ import java.util.List;
 
 // ChannelPipeline 用于管理一组处理器
 public class ChannelPipeline {
-    private List<Handler> handlers = new ArrayList<>();
+    private final List<Handler> handlers = new ArrayList<>();
 
     public void addLast(Handler... handlers) {
         this.handlers.addAll(Arrays.asList(handlers));

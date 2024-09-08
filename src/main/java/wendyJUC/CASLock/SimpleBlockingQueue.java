@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class LeonBlockingQueue<T> {
+public class SimpleBlockingQueue<T> {
     private Queue<T> queue = new LinkedList<>();
     private volatile int lockState = 0;
     private static final Unsafe unsafe;
@@ -17,13 +17,13 @@ public class LeonBlockingQueue<T> {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
             unsafe = (Unsafe) field.get(null);
-            lockStateOffset = unsafe.objectFieldOffset(LeonBlockingQueue.class.getDeclaredField("lockState"));
+            lockStateOffset = unsafe.objectFieldOffset(SimpleBlockingQueue.class.getDeclaredField("lockState"));
         } catch (Exception ex) {
             throw new Error(ex);
         }
     }
 
-    public LeonBlockingQueue(int capacity) {
+    public SimpleBlockingQueue(int capacity) {
         // Optionally handle the capacity if needed
     }
 
